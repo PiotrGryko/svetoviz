@@ -324,7 +324,7 @@ sv.demo_modules()
 
 ### Free to use
 
-Both apps are free to use and fully offline
+Both apps are free to use
 
 ---
 
