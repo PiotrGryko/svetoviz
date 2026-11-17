@@ -38,8 +38,6 @@ module.
     - [Both renderers in one environment](#both-renderers-in-one-environment)
     - [Cache setup](#cache-setup)
     - [Demos](#demos)
-    - [Web Visualization license](#web-visualization-license)
-    - [Product activation](#product-activation)
 - [3. API Reference](#3-api-reference)
     - [Desktop methods](#desktop-methods)
     - [Web methods](#web-methods)
@@ -101,13 +99,12 @@ module.
     - [Layer relations](#layer-relations)
     - [Module catalog](#module-catalog)
 - [12. Try Svetoviz Now](#12-try-svetoviz-now)
-- [13. Licensing and Pricing](#13-licensing-and-pricing)
-- [14. Documentation Index](#14-documentation-index)
+- [13. Documentation Index](#13-documentation-index)
     - [Video demos](#video-demos)
-- [15. Links](#15-links)
-- [16. About](#16-about)
+- [14. Links](#14-links)
+- [15. About](#15-about)
 
-> Every section below mirrors the matching page of the documentation site (https://www.svetoviz.com/docs) one to one, in the same order. The section-to-page mapping, including the two reference scripts, is listed in [Documentation Index](#14-documentation-index).
+> Every section below mirrors the matching page of the documentation site (https://www.svetoviz.com/docs) one to one, in the same order. The section-to-page mapping, including the two reference scripts, is listed in [Documentation Index](#13-documentation-index).
 
 ---
 
@@ -136,7 +133,7 @@ Your Python process builds a scene out of **Views** (data sources) and **Layouts
 Both packages expose the same surface - `sv.array`, `sv.tensor`, `sv.image`, `sv.view`, `sv.pytorch`, `sv.model`, `sv.pipeline`, `sv.save_to_disc`, `sv.load_from_disc` - and share a single mapping implementation, so a scene built for one renderer behaves identically in the other.
 
 - The **OpenGL app** is entirely free and written in pure OpenGL. It focuses on clear perspective over immersion: fast, local, no server, no browser.
-- The **WebGPU app** streams the scene to a browser tab and renders it client-side with a custom WebGPU pipeline. Advanced web methods require a Web Visualization license.
+- The **WebGPU app** streams the scene to a browser tab and renders it client-side with a custom WebGPU pipeline.
 
 ### Architecture
 
@@ -308,7 +305,7 @@ The same block works for `svetoviz_opengl`.
 
 ### Demos
 
-Run the demo to verify the WebGPU installation. Demos do not require a license:
+Run the demo to verify the WebGPU installation:
 
 ```python
 import svetoviz_webgpu as sv
@@ -321,28 +318,6 @@ sv.demo_modules()
 ```
 
 `sv.demo_modules()` opens a collection of all supported PyTorch modules. Pass any string into the terminal view to process them, then use the timeline view to walk through the activations.
-
-### Web Visualization license
-
-While the basic desktop viewer is open, all advanced **Web Visualization** methods are part of the premium suite. To unlock web-based 3D rendering and remote inspection, a license key is required.
-
-| Plan | Price |
-|---|---|
-| Yearly | **$49.00 a year** - https://svetoviz.lemonsqueezy.com/checkout/buy/89bfac79-370f-49ad-a307-652a0b18527e |
-| Monthly | **$4.99 a month** - https://svetoviz.lemonsqueezy.com/checkout/buy/e71b4504-3c6a-4f9b-81d5-9d4d83c84445 |
-
-### Product activation
-
-Once you have obtained your key, activate the product within your Python environment to enable premium features:
-
-```python
-import svetoviz_webgpu as sv
-
-# Activate the premium web suite
-sv.activate_license("your-license-key")
-```
-
-After activation the license file is stored on your machine. See [Licensing and Pricing](#13-licensing-and-pricing) for details.
 
 ---
 
@@ -377,7 +352,7 @@ Method definitions and parameter specifications for both libraries. The OpenGL a
 
 ### Web methods
 
-`svetoviz_webgpu` - identical to the desktop surface plus networking and licensing:
+`svetoviz_webgpu` - identical to the desktop surface plus networking:
 
 | Signature |
 |---|
@@ -396,7 +371,6 @@ Method definitions and parameter specifications for both libraries. The OpenGL a
 | `build_pmtiles_file(cls, directory)` |
 | `demo_array(cls, host="localhost", http_port=8000)` |
 | `demo_modules(cls, host="localhost", http_port=8000)` |
-| `activate_license(cls, license_key)` |
 
 ### WebConfig
 
@@ -462,7 +436,6 @@ class WebConfig:
 | `save_to_disc(view, directory, ...)` | Write a scene into tiles plus a `tree.db` |
 | `load_from_disc(directory)` | Open a built scene without the original data |
 | `build_pmtiles_file(directory)` | Turn a built scene into a PMTiles pyramid for remote hosting |
-| `activate_license(key)` | Activate a Web Visualization license |
 
 ### Terminal buffer helpers
 
@@ -2074,38 +2047,14 @@ public scenes, module walkthroughs and published datasets.
 
 ---
 
-## 13. Licensing and Pricing
-
-| Product | Price |
-|---|---|
-| **OpenGL desktop viewer** | Free - included with `svetoviz_opengl`, no license needed |
-| **Web Visualization License** | **$49.00 / year** or **$4.99 / month** |
-
-The Web Visualization license unlocks the advanced web suite (`svetoviz_webgpu`): interactive web layouts, cloud syncing and remote dataset inspection.
-
-- Yearly - $49.00/year: https://svetoviz.lemonsqueezy.com/checkout/buy/89bfac79-370f-49ad-a307-652a0b18527e
-- Monthly - $4.99/month: https://svetoviz.lemonsqueezy.com/checkout/buy/e71b4504-3c6a-4f9b-81d5-9d4d83c84445
-
-Once you have a key:
-
-```python
-import svetoviz_webgpu as sv
-
-sv.activate_license("your-license-key")
-```
-
-The license file is stored on your machine after activation. Try the renderer first with the license-free demos: `sv.demo_array()` and `sv.demo_modules()`.
-
----
-
-## 14. Documentation Index
+## 13. Documentation Index
 
 The written guides published on the website, in the same order as this README:
 
 | Guide | Covers | Link |
 |---|---|---|
 | Overview | What Svetoviz is, the visual-debugger concept, supported data types | https://www.svetoviz.com/docs |
-| Installation | Both packages, dependency lists, single-environment setup, demos, licensing and activation | https://www.svetoviz.com/docs/install |
+| Installation | Both packages, dependency lists, single-environment setup, demos | https://www.svetoviz.com/docs/install |
 | API Reference | Full signatures and parameters for every method, view, layout, remote view and utility | https://www.svetoviz.com/docs/docs |
 | Images | `image` / `images` polymorphism, batch inspection, cache configuration | https://www.svetoviz.com/docs/images |
 | NumPy | Single array inspection, stacking, colormaps, mixed dtypes, axis ordering, large high-dimensional arrays | https://www.svetoviz.com/docs/numpy |
@@ -2133,7 +2082,7 @@ The written guides published on the website, in the same order as this README:
 
 ---
 
-## 15. Links
+## 14. Links
 
 - **Website / public directory:** https://www.svetoviz.com
 - **Documentation:** https://www.svetoviz.com/docs
@@ -2146,7 +2095,7 @@ The written guides published on the website, in the same order as this README:
 
 ---
 
-## 16. About
+## 15. About
 
 **Svetoviz Research** - advancing high-dimensional data visualization and machine learning interpretability.
 
@@ -2165,7 +2114,6 @@ Registered in Bialystok, Poland.
 
 **[www.svetoviz.com](https://www.svetoviz.com)** | **[Documentation](https://www.svetoviz.com/docs)** | **[PyTorch Debugger](https://pytorch.svetoviz.com)**
 
-<p>© 2026 Piotr Gryko. All rights reserved.</p>
 <p>Built for the Global AI Research Community.</p>
 
 </div>
