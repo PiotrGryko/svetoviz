@@ -29,7 +29,7 @@ print(f"Cache dir: {sv.get_cache_dir()}")
 ###################################################################
 ###################### DEMOS #################################
 ###################################################################
-# You can access demo examples without activating the license
+# You can access demo examples
 
 # Simple array demo
 def array_demo():
