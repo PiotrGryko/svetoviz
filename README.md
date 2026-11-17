@@ -2032,7 +2032,7 @@ public scenes, module walkthroughs and published datasets.
 
 | Destination | What is there |
 |---|---|
-| **https://www.svetoviz.com** | Product overview, the public 3D scene directory and pricing |
+| **https://www.svetoviz.com** | Product overview, the public 3D scene directory |
 | **https://www.svetoviz.com/docs** | The full manuals and guides mirrored by this README |
 | **https://pytorch.svetoviz.com** | Illustrated per-module guides for all 114 PyTorch modules |
 | **https://app.svetoviz.com** | Dataset scenes published online, browsable in the browser |
@@ -2126,6 +2126,6 @@ Registered in Bialystok, Poland.
 
 [![Open Svetoviz](https://img.shields.io/badge/Open%20Svetoviz-www.svetoviz.com-CC7832?style=for-the-badge)](https://www.svetoviz.com)
 
-**https://www.svetoviz.com** - documentation, install commands, pricing and the public model / dataset browser.
+**https://www.svetoviz.com** - documentation, install commands and the public model / dataset browser.
 
 </div>
