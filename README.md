@@ -307,6 +307,7 @@ The same block works for `svetoviz_opengl`.
 
 Run the demo to verify the WebGPU installation:
 
+
 ```python
 import svetoviz_webgpu as sv
 
@@ -320,6 +321,13 @@ sv.demo_modules()
 `sv.demo_modules()` opens a collection of all supported PyTorch modules. Pass any string into the terminal view to process them, then use the timeline view to walk through the activations.
 
 ---
+
+### Free to use
+
+Both apps are free to use and fully offline
+
+---
+
 
 ## 3. API Reference
 
