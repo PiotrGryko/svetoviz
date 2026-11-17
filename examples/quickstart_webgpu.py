@@ -45,20 +45,9 @@ def array_demo():
 def modules_demo():
     """
     Open collection of all supported modules
-    These examples are fixed, if you want to use real data, activate the product
+    These examples are fixed
     """
     sv.demo_modules()
-
-
-###################################################################
-###################### PRODUCT ACTIVATION #################################
-###################################################################
-def activate():
-    """
-    Activate your license.
-    After activation your license file will be stored on your machine
-    """
-    sv.activate_license("your-license-key")
 
 
 ###################################################################
@@ -1064,8 +1053,6 @@ def stable_diffusion():
 if __name__ == "__main__":
     array_demo()
     #modules_demo()
-
-    #activate()
 
     #array()
     #array_image_channels()
