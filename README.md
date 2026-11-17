@@ -6,7 +6,7 @@
 
 **Svetoviz is a debug viewer for tensors, images, NumPy arrays, datasets and PyTorch models.** It ships as two
 applications that share one Python API and one mapping implementation: a custom **WebGPU renderer** that renders
-entire models and datasets in the browser, and a free native **OpenGL desktop app** for local inspection. Both
+entire models and datasets in the browser, and a native **OpenGL desktop app** for local inspection. Both
 include a **PyTorch debugger** that traces the *input -> weights -> output* relation of every basic `torch.nn`
 module.
 
@@ -132,7 +132,7 @@ Your Python process builds a scene out of **Views** (data sources) and **Layouts
 
 Both packages expose the same surface - `sv.array`, `sv.tensor`, `sv.image`, `sv.view`, `sv.pytorch`, `sv.model`, `sv.pipeline`, `sv.save_to_disc`, `sv.load_from_disc` - and share a single mapping implementation, so a scene built for one renderer behaves identically in the other.
 
-- The **OpenGL app** is entirely free and written in pure OpenGL. It focuses on clear perspective over immersion: fast, local, no server, no browser.
+- The **OpenGL app** is written in pure OpenGL. It focuses on clear perspective over immersion: fast, local, no server, no browser.
 - The **WebGPU app** streams the scene to a browser tab and renders it client-side with a custom WebGPU pipeline.
 
 ### Architecture
@@ -175,7 +175,7 @@ Svetoviz is currently distributed via a private repository. Both packages are in
 
 ### OpenGL installation
 
-You can install the free OpenGL app using the following command:
+You can install the OpenGL app using the following command:
 
 ```bash
 pip install svetoviz_opengl --extra-index-url https://svetoviz.com/opengl/simple/
@@ -1491,7 +1491,7 @@ The Python OpenGL app provides a lightweight, local alternative for rapid inspec
 
 ### Local 2D rendering
 
-The OpenGL application is **entirely free** and written in pure **OpenGL**. While it focuses on clear perspective rather than the immersive 3D quality of the web interface, it is a great way to check your modules and weights directly on your desktop.
+The OpenGL application is written in pure **OpenGL**. While it focuses on clear perspective rather than the immersive 3D quality of the web interface, it is a great way to check your modules and weights directly on your desktop.
 
 Download [`examples/quickstart_opengl.py`](examples/quickstart_opengl.py) for practical examples.
 
