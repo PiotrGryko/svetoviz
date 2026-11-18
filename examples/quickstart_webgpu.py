@@ -1,5 +1,5 @@
 ###################################################################
-########### Use this file for svetoviz_webgpu reference ###########
+########### Use this file for svetoviz reference ###########
 ###################################################################
 
 import os
@@ -20,7 +20,7 @@ os.environ["SVETO_VIZ_CACHE_DIR"] = cache_dir
 ###################################################################
 ###################### IMPORT SVETOVIZ WEBGPU #####################
 ###################################################################
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Verify the cache
 print(f"Cache dir: {sv.get_cache_dir()}")
@@ -236,14 +236,14 @@ def tensor_view():
         ordering=None)
     sv.view(view)
 
-def disc_image_view():
+def disk_image_view():
     """
-    Eagerly open image from disc.
+    Eagerly open image from disk.
     It dumps entire image as memory file into cache directory
     Rendering happens from memory file
     """
-    view = sv.DiscImageView(
-        id="disc_image",
+    view = sv.DiskImageView(
+        id="disk_image",
         image=IMAGE_URL)
     sv.view(view)
 
@@ -286,8 +286,8 @@ def vertical_layout():
                 data=image_array,
                 gap_size=10,
                 ordering=(2, 0, 1)),
-            sv.DiscImageView(
-                id="disc_image",
+            sv.DiskImageView(
+                id="disk_image",
                 image=image),
             sv.LazyImageView(
                 id="lazy_image",
@@ -323,8 +323,8 @@ def horizontal_layout():
                 data=image_array,
                 gap_size=10,
                 ordering=(2, 0, 1)),
-            sv.DiscImageView(
-                id="disc_image",
+            sv.DiskImageView(
+                id="disk_image",
                 image=image),
             sv.LazyImageView(
                 id="lazy_image",
@@ -364,8 +364,8 @@ def grid_layout():
                 title="Images",
                 background_color=(50, 50, 50, 255),
                 views=[
-                    sv.DiscImageView(
-                        id="disc_image",
+                    sv.DiskImageView(
+                        id="disk_image",
                         image=IMAGE_URL),
                     sv.LazyImageView(
                         id="lazy_image",
@@ -424,7 +424,7 @@ def directory_grid_view(directory):
     """
     Open directory of images organized into a grid
     Use limit argument to open only N first images
-    Use lazy argument to use DiscImageView or LazyImageView
+    Use lazy argument to use DiskImageView or LazyImageView
     Use optional description_func to provide searchable description per file
     """
 
@@ -444,7 +444,7 @@ def directory_grid_view(directory):
     # - Available RAM
     # - You may see empty scene at launch until data loads
     # If using lazy=False you are limited by:
-    # - Available disc space for DiscImageView memory files
+    # - Available disk space for DiskImageView memory files
     # - Max opened file descriptors count
 
     # sv.view() may start failing around 500-1000 data points.
@@ -455,7 +455,7 @@ def directory_grid_view(directory):
     # For large number of images save your scene offline
     # After saving the scene can be opened without original images with minimal loading times
     # Use compression argument to control:
-    # - Used disc space
+    # - Used disk space
     # - Scene quality
     # - Build duration
     # Use image_backend argument to process images using
@@ -465,21 +465,21 @@ def directory_grid_view(directory):
     # Use max_memory_gb argument to set loose max memory cap
     # max_memory_gb is used only for lazy images pool
     output_directory = f"/{sv.get_cache_dir()}/directory_grid_layout"
-    sv.save_to_disc(view=layout,
+    sv.save_to_disk(view=layout,
                     threaded=True,
                     directory=output_directory,
                     compression="png_0",
                     image_backend="pillow")
 
     # Open directly from output_directory
-    sv.load_from_disc(directory=output_directory)
+    sv.load_from_disk(directory=output_directory)
 
 
 def directory_spiral_layout(directory):
     """
     Open directory of images organized into a spiral
     Use limit argument to open only N first images
-    Use lazy argument to use DiscImageView or LazyImageView
+    Use lazy argument to use DiskImageView or LazyImageView
     Use optional description_func to provide searchable description per file
     """
 
@@ -500,7 +500,7 @@ def directory_spiral_layout(directory):
     # - Available RAM
     # - You may see empty scene at launch until data loads
     # If using lazy=False you are limited by:
-    # - Available disc space for DiscImageView memory files
+    # - Available disk space for DiskImageView memory files
     # - Max opened file descriptors count
     # sv.view() may start failing around 500-1000 data points.
     # Launch loading times may get unacceptable with lazy=True,
@@ -510,7 +510,7 @@ def directory_spiral_layout(directory):
     # For large number of images save your scene offline
     # After saving the scene can be opened without original images
     # Use compression argument to control:
-    # - Used disc space
+    # - Used disk space
     # - Scene quality
     # - Build duration
     # Use image_backend argument to process images using
@@ -520,14 +520,14 @@ def directory_spiral_layout(directory):
     # Use max_memory_gb argument to set loose max memory cap
     # max_memory_gb is used only for lazy images pool
     output_directory = f"/{sv.get_cache_dir()}/directory_layouts"
-    sv.save_to_disc(view=layout,
+    sv.save_to_disk(view=layout,
                     threaded=True,
                     directory=output_directory,
                     compression="png_0",
                     image_backend="pillow")
 
     # Open directly from output_directory
-    sv.load_from_disc(directory=output_directory)
+    sv.load_from_disk(directory=output_directory)
 
 
 def dataset_subset():
@@ -540,8 +540,8 @@ def dataset_subset():
     - You are limited by available RAM
     - Gets slow around 500-1000 images
 
-    For large scenes use sv.save_to_disc and sv.load_from_disc
-    - You are limited by available disc space
+    For large scenes use sv.save_to_disk and sv.load_from_disk
+    - You are limited by available disk space
 
     """
     from datasets import load_dataset
@@ -571,8 +571,8 @@ def dataset_subset_compare():
     - You are limited by available RAM
     - Gets slow around 500-1000 images
 
-    For large scenes use sv.save_to_disc and sv.load_from_disc
-    - You are limited by available disc space
+    For large scenes use sv.save_to_disk and sv.load_from_disk
+    - You are limited by available disk space
 
     """
     from datasets import load_dataset
@@ -621,8 +621,8 @@ def dataset_full_small():
     Open full HF dataset
     Use DatasetView to render dataset grid view
 
-    For large scenes use sv.save_to_disc and sv.load_from_disc
-    - You are limited by available disc space
+    For large scenes use sv.save_to_disk and sv.load_from_disk
+    - You are limited by available disk space
 
     """
     from datasets import load_dataset
@@ -639,12 +639,12 @@ def dataset_full_small():
     )
 
     dir = f"/Volumes/Untitled/{hf_name}"
-    sv.save_to_disc(view=layout,
+    sv.save_to_disk(view=layout,
                     threaded=True,
                     directory=dir,
                     compression="jpeg_0",
                     image_backend="opencv")
-    sv.load_from_disc(directory=dir)
+    sv.load_from_disk(directory=dir)
 
 
 def dataset_full_medium():
@@ -652,8 +652,8 @@ def dataset_full_medium():
     Open HF dataset
     Use DatasetView to render dataset grid view
 
-    For large scenes use sv.save_to_disc and sv.load_from_disc
-    - You are limited by available disc space
+    For large scenes use sv.save_to_disk and sv.load_from_disk
+    - You are limited by available disk space
 
     ROCOv2-radiology contains radiological images
     Type "colon cancer" or "brain tumor" into search bar to quickly browse related images
@@ -672,12 +672,12 @@ def dataset_full_medium():
     )
 
     dir = f"/Volumes/Untitled/{hf_name}"
-    sv.save_to_disc(view=layout,
+    sv.save_to_disk(view=layout,
                     threaded=True,
                     directory=dir,
                     compression="jpeg_0",
                     image_backend="opencv")
-    sv.load_from_disc(directory=dir)
+    sv.load_from_disk(directory=dir)
 
 def disk_scene_view():
     """
@@ -741,7 +741,7 @@ def pipeline_view():
 def remote_dataset():
     """
     Open full HF dataset from remote server
-    After building the dataset with save_to_disc
+    After building the dataset with save_to_disk
     you can process it further to generate pmtiles file
 
     Use: sv.build_pmtiles_file(directory=dir) to generate pmtiles file
@@ -751,7 +751,7 @@ def remote_dataset():
 
     Use RemotePmTilesView to start your scene from URL
     You NEED TO HAVE the tree.db file from original
-    save_to_disc() method result
+    save_to_disk() method result
 
     In this example we open Dewa/Dog_Emotion_Dataset_v2
     from svetoviz server
@@ -777,7 +777,7 @@ def remote_dataset():
         cell_height=440,
     )
 
-    sv.save_to_disc(view=dataset_view,
+    sv.save_to_disk(view=dataset_view,
                     directory=dir,
                     compression="jpeg_0",
                     image_backend="opencv")
@@ -1067,7 +1067,7 @@ if __name__ == "__main__":
     #numpy_view()
     #numpy_view_image_channels()
 
-    #disc_image_view()
+    #disk_image_view()
     #lazy_image_view()
 
     #directory_grid_view("/Users/piotrgryko/Desktop")

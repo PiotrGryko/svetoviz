@@ -4,19 +4,18 @@
 
 ### High-dimensional data visualization for NumPy, PyTorch, Hugging Face datasets and entire neural networks.
 
-**Svetoviz is a debug viewer for tensors, images, NumPy arrays, datasets and PyTorch models.** It ships as two
-applications that share one Python API and one mapping implementation: a custom **WebGPU renderer** that renders
-entire models and datasets in the browser, and a native **OpenGL desktop app** for local inspection. Both
-include a **PyTorch debugger** that traces the *input -> weights -> output* relation of every basic `torch.nn`
+**Svetoviz is a debug viewer for tensors, images, NumPy arrays, datasets and PyTorch models.** It ships as a
+single Python package (`svetoviz`) that streams your scene to a custom **WebGPU renderer** running in the browser,
+and includes a **PyTorch debugger** that traces the *input -> weights -> output* relation of every basic `torch.nn`
 module.
 
 [![Website](https://img.shields.io/badge/Website-www.svetoviz.com-CC7832?style=flat-square)](https://www.svetoviz.com)
 [![Documentation](https://img.shields.io/badge/Docs-www.svetoviz.com%2Fdocs-6A8759?style=flat-square)](https://www.svetoviz.com/docs)
 [![PyTorch Debugger](https://img.shields.io/badge/PyTorch%20Debugger-pytorch.svetoviz.com-6897BB?style=flat-square)](https://pytorch.svetoviz.com)
-[![Install](https://img.shields.io/badge/Install-pip%20svetoviz__opengl%20%7C%20svetoviz__webgpu-9876AA?style=flat-square)](#2-installation-and-quick-start)
+[![Install](https://img.shields.io/badge/Install-pip%20svetoviz-9876AA?style=flat-square)](#2-installation-and-quick-start)
 [![Python](https://img.shields.io/badge/Python-3.9%20to%203.14-9876AA?style=flat-square)](#2-installation-and-quick-start)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20Apple%20Silicon%20%7C%20Linux-FFC66D?style=flat-square)](#2-installation-and-quick-start)
-[![Renderers](https://img.shields.io/badge/Renderers-WebGPU%20%7C%20OpenGL-BBB529?style=flat-square)](#1-overview)
+[![Renderer](https://img.shields.io/badge/Renderer-WebGPU-BBB529?style=flat-square)](#1-overview)
 [![Modules](https://img.shields.io/badge/PyTorch%20modules-114%20documented-A9B7C6?style=flat-square)](#11-pytorch-modules-and-debugger)
 
 **[Website](https://www.svetoviz.com)** &nbsp;|&nbsp; **[Documentation](https://www.svetoviz.com/docs)** &nbsp;|&nbsp; **[Install](#2-installation-and-quick-start)**
@@ -29,18 +28,15 @@ module.
 
 - [1. Overview](#1-overview)
     - [What you can build](#what-you-can-build)
-    - [Two renderers, one API](#two-renderers-one-api)
+    - [Compatibility](#compatibility)
     - [Architecture](#architecture)
     - [Repository layout](#repository-layout)
 - [2. Installation and Quick Start](#2-installation-and-quick-start)
-    - [OpenGL installation](#opengl-installation)
-    - [WebGPU installation](#webgpu-installation)
-    - [Both renderers in one environment](#both-renderers-in-one-environment)
+    - [Installation](#installation)
     - [Cache setup](#cache-setup)
     - [Demos](#demos)
 - [3. API Reference](#3-api-reference)
-    - [Desktop methods](#desktop-methods)
-    - [Web methods](#web-methods)
+    - [Methods](#methods)
     - [WebConfig](#webconfig)
     - [Views classes](#views-classes)
     - [Layouts classes](#layouts-classes)
@@ -86,14 +82,11 @@ module.
     - [Diffusion pipeline](#diffusion-pipeline)
     - [Static model views](#static-model-views)
     - [Renderer settings](#renderer-settings)
-- [10. Python App and Desktop App (OpenGL)](#10-python-app-and-desktop-app-opengl)
-    - [Local 2D rendering](#local-2d-rendering)
+- [10. Python App](#10-python-app)
+    - [One API surface](#one-api-surface)
     - [Explicit layout control](#explicit-layout-control)
     - [Image layouts](#image-layouts)
     - [Saving and loading](#saving-and-loading)
-    - [Datasets](#datasets)
-    - [PyTorch module inspection](#pytorch-module-inspection)
-    - [Interactive models](#interactive-models)
 - [11. PyTorch Modules and Debugger](#11-pytorch-modules-and-debugger)
     - [Interactive modules](#interactive-modules)
     - [Layer relations](#layer-relations)
@@ -104,7 +97,7 @@ module.
 - [14. Links](#14-links)
 - [15. About](#15-about)
 
-> Every section below mirrors the matching page of the documentation site (https://www.svetoviz.com/docs) one to one, in the same order. The section-to-page mapping, including the two reference scripts, is listed in [Documentation Index](#13-documentation-index).
+> Every section below mirrors the matching page of the documentation site (https://www.svetoviz.com/docs) one to one, in the same order. The section-to-page mapping, including the reference script, is listed in [Documentation Index](#13-documentation-index).
 
 ---
 
@@ -121,19 +114,15 @@ Your Python process builds a scene out of **Views** (data sources) and **Layouts
 - **PyTorch Debugger:** track the input -> weights -> output relations for every basic PyTorch module.
 - **Your own data:** build views from your own models, datasets and NumPy arrays with the Python package and open them in the browser - the renderer runs locally, no account needed.
 
-### Two renderers, one API
+### Compatibility
 
 <a id="compatibility"></a>
 
-| | Package | Renders in | macOS (Apple Silicon) | Linux | Python |
-|---|---|---|:---:|:---:|---|
-| **WebGPU app** | `svetoviz_webgpu` | A modern browser (Chrome / Chromium WebGPU) | Yes | Yes (`x86_64` / `aarch64`) | **3.9 - 3.14** |
-| **OpenGL app** | `svetoviz_opengl` | A native desktop window | Yes | No | **3.9 - 3.12** |
+| Package | Renders in | macOS (Apple Silicon) | Linux | Python |
+|---|---|:---:|:---:|---|
+| `svetoviz` | A modern browser (Chrome / Chromium WebGPU) | Yes | Yes (`x86_64` / `aarch64`) | **3.9 - 3.14** |
 
-Both packages expose the same surface - `sv.array`, `sv.tensor`, `sv.image`, `sv.view`, `sv.pytorch`, `sv.model`, `sv.pipeline`, `sv.save_to_disc`, `sv.load_from_disc` - and share a single mapping implementation, so a scene built for one renderer behaves identically in the other.
-
-- The **OpenGL app** is written in pure OpenGL. It focuses on clear perspective over immersion: fast, local, no server, no browser.
-- The **WebGPU app** streams the scene to a browser tab and renders it client-side with a custom WebGPU pipeline.
+The single `svetoviz` package exposes one surface - `sv.array`, `sv.tensor`, `sv.image`, `sv.view`, `sv.pytorch`, `sv.model`, `sv.pipeline`, `sv.save_to_disk`, `sv.load_from_disk` - backed by one mapping implementation. It streams the scene to a browser tab and renders it client-side with a custom WebGPU pipeline: the renderer runs locally, so no account and no server-side compute are required.
 
 ### Architecture
 
@@ -147,12 +136,11 @@ numpy / torch / PIL / HF dataset
         +-- Layouts (Vertical / Horizontal / Grid / Directory / Spiral)
         |
         +-- sv.view(scene)  ------------->  WebGPU  (browser)  --------->  3D scene
-                                     +---->  OpenGL  (desktop)  --------->  window
 
-sv.save_to_disc(scene) --> tiles + tree.db --> sv.build_pmtiles_file() --> remote URL
+sv.save_to_disk(scene) --> tiles + tree.db --> sv.build_pmtiles_file() --> remote URL
 ```
 
-This README mirrors the documentation site section by section. Every code block below is taken from the corresponding documentation page or from the two reference scripts in this repository.
+This README mirrors the documentation site section by section. Every code block below is taken from the corresponding documentation page or from the reference script in this repository.
 
 ### Repository layout
 
@@ -161,8 +149,7 @@ This README mirrors the documentation site section by section. Every code block 
 |-- README.md                       # this document (GitHub landing page)
 |-- app.py                          # local preview renderer for README.md (not part of the package)
 |-- examples/
-|   |-- quickstart_webgpu.py        # reference script for svetoviz_webgpu
-|   `-- quickstart_opengl.py        # reference script for svetoviz_opengl
+|   `-- quickstart_webgpu.py        # reference script for svetoviz
 `-- assets/
     `-- images/                     # every screenshot embedded in this README
 ```
@@ -171,80 +158,48 @@ This README mirrors the documentation site section by section. Every code block 
 
 ## 2. Installation and Quick Start
 
-Svetoviz is currently distributed via a private repository. Both packages are installed from their own wheel indexes.
+Svetoviz is currently distributed via a private repository.
 
-### OpenGL installation
+### Installation
 
-You can install the OpenGL app using the following command:
-
-```bash
-pip install svetoviz_opengl --extra-index-url https://svetoviz.com/opengl/simple/
-```
-
-**Compatibility:** this package supports **macOS (Apple Silicon)** and Python versions **3.9 through 3.12**.
-
-Dependencies installed with the OpenGL app:
-
-```python
-dependencies = [
-    "opencv-python==4.13.0.92",
-    "matplotlib==3.9.4",
-    "transformers==4.57.6",
-    "datasets==4.5.0",
-    "glfw==2.10.0",
-    "imgui==2.0.0",
-    "PyOpenGL==3.1.10",
-    "psutil==7.2.2",
-    "psd-tools==1.11.0",
-    "torch==2.8.0; python_version == '3.9'",
-    "torch==2.13.0; python_version >= '3.10'"
-]
-```
-
-**Quick start:** download [`examples/quickstart_opengl.py`](examples/quickstart_opengl.py) for the full reference script. The minimal starting point from that file:
-
-```python
-# examples/quickstart_opengl.py
-import os
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-cache_dir = os.path.join(current_dir, "cache_test")
-os.environ["SVETO_VIZ_CACHE_DIR"] = cache_dir
-
-import svetoviz_opengl as sv
-import numpy as np
-
-print(f"Cache dir: {sv.get_cache_dir()}")
-
-data = np.random.rand(4, 4, 32, 32).astype(np.float32)
-sv.array(data, gap_size=10)
-```
-
-### WebGPU installation
-
-You can install the WebGPU app using the following command:
+Install the Svetoviz package (WebGPU renderer) with the following command:
 
 ```bash
-pip install svetoviz_webgpu --extra-index-url https://svetoviz.com/webgpu/simple/
+pip install svetoviz --extra-index-url https://svetoviz.com/webgpu/simple/
 ```
 
 **Compatibility:** this package supports **macOS (Apple Silicon), Linux** and Python versions **3.9 through 3.14**.
 
-Dependencies installed with the WebGPU app:
+Dependencies installed with the Svetoviz package:
 
 ```python
 dependencies = [
     "Flask==3.1.3",
+    "flask-cors==6.0.5",
     "waitress==3.0.2",
     "opencv-python==4.13.0.92",
-    "transformers==4.57.6",
-    "datasets==4.5.0",
     "psd-tools==1.11.0",
     "pmtiles==3.7.0",
     "websockets==15.0.1",
     "petname==2.9",
+
+    # requests
+    "requests==2.32.5; python_version == '3.9'",
+    "requests==2.34.2; python_version >= '3.10'",
+
+    # transformers
+    "transformers==4.57.3; python_version == '3.9'",
+    "transformers==5.20.2; python_version == '3.10'",
+    "transformers==5.23.0; python_version >= '3.11'",
+
+    # torch
     "torch==2.8.0; python_version == '3.9'",
-    "torch==2.13.0; python_version >= '3.10'"
+    "torch==2.14.1; python_version == '3.10'",
+    "torch==2.15.0; python_version >= '3.11'",
+
+    # datasets
+    "datasets==4.5.0; python_version == '3.9'",
+    "datasets==5.2.0; python_version >= '3.10'",
 ]
 ```
 
@@ -258,30 +213,13 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 cache_dir = os.path.join(current_dir, "cache_test")
 os.environ["SVETO_VIZ_CACHE_DIR"] = cache_dir
 
-import svetoviz_webgpu as sv
+import svetoviz as sv
 import numpy as np
 
 print(f"Cache dir: {sv.get_cache_dir()}")
 
 data = np.random.rand(4, 4, 32, 32).astype(np.float32)
 sv.array(data, gap_size=10)  # opens http://localhost:8000
-```
-
-### Both renderers in one environment
-
-Both apps can coexist in a single virtual environment. Select your preferred renderer by choosing the import:
-
-```python
-import svetoviz_opengl as svo
-import svetoviz_webgpu as svw
-
-data = np.random.rand(4, 4, 32, 32).astype(np.float32)
-
-# OpenGL renderer
-svo.array(data, gap_size=10)
-
-# WebGPU renderer
-svw.array(data, gap_size=10)
 ```
 
 ### Cache setup
@@ -295,21 +233,18 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 cache_dir = os.path.join(current_dir, "cache_test")
 os.environ["SVETO_VIZ_CACHE_DIR"] = cache_dir
 
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Verify the cache
 print(f"Cache dir: {sv.get_cache_dir()}")
 ```
 
-The same block works for `svetoviz_opengl`.
-
 ### Demos
 
-Run the demo to verify the WebGPU installation:
-
+Run the demo to verify the installation:
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Run web demo
 sv.demo_array()
@@ -322,45 +257,13 @@ sv.demo_modules()
 
 ---
 
-### Free to use
-
-Both apps are free to use
-
----
-
-
 ## 3. API Reference
 
-Method definitions and parameter specifications for both libraries. The OpenGL app follows the WebGPU interface, with the desktop signatures being a subset (no network arguments).
+Method definitions and parameter specifications for the `svetoviz` package.
 
-### Desktop methods
+### Methods
 
-`svetoviz_opengl`
-
-| Signature | Notes |
-|---|---|
-| `array(cls, np_array, gap_size=0, ordering=None)` | Visualize a single NumPy array |
-| `arrays(cls, arrays, gap_size=0)` | Visualize a list of NumPy arrays |
-| `tensor(cls, tensor, gap_size=0, ordering=None)` | Visualize a single `torch.Tensor` |
-| `tensors(cls, tensors, gap_size=0)` | Visualize a list of tensors |
-| `image(cls, image)` | Visualize one image (URL / path / PIL) |
-| `images(cls, images)` | Visualize a list of images |
-| `pytorch(cls, module, terminal_callback=None)` | Attach the debugger to a `nn.Module` |
-| `model(cls, id, model, tokenizer=None, image_processor=None, video_processor=None, processor=None, scheduler=None, feature_extractor=None, terminal_callback=None)` | Attach the debugger to a Hugging Face model |
-| `pipeline(cls, id, pipe, terminal_callback=None)` | Attach the debugger to a pipeline |
-| `view(cls, view)` | Open a View or Layout instance |
-| `save_to_disc(cls, view, directory, threaded=True, max_memory_gb=2, image_backend="pillow", compression="png_0")` | Build a scene offline |
-| `load_from_disc(cls, directory)` | Open a previously built scene |
-
-**Parameter notes**
-
-- `gap_size` - integer spacing between visualized slices. Default `0`.
-- `ordering` - tuple or list defining the axis permutation, identical to `numpy.transpose`. The visualizer treats the **last two dimensions** as width and height, so arrays in `(H, W, C)` layout appear distorted and must be reordered, e.g. `ordering=(2, 0, 1)`.
-- `image` - accepts a URL string, a local file path, or a Pillow `Image` instance.
-
-### Web methods
-
-`svetoviz_webgpu` - identical to the desktop surface plus networking:
+`svetoviz`
 
 | Signature |
 |---|
@@ -374,11 +277,17 @@ Method definitions and parameter specifications for both libraries. The OpenGL a
 | `model(cls, id, model, tokenizer=None, image_processor=None, video_processor=None, processor=None, scheduler=None, feature_extractor=None, terminal_callback=None, host="localhost", http_port=8000, ws_port=8765, blocking=True, config=None)` |
 | `pipeline(cls, id, pipe, terminal_callback=None, host="localhost", http_port=8000, ws_port=8765, blocking=True, config=None)` |
 | `view(cls, view, terminal_callback=None, host="localhost", http_port=8000, ws_port=8765, config=None)` |
-| `save_to_disc(cls, view, directory, threaded=True, max_memory_gb=2, image_backend="pillow", compression="png_0")` |
-| `load_from_disc(cls, directory, host="localhost", http_port=8000, ws_port=8765, config=None)` |
+| `save_to_disk(cls, view, directory, threaded=True, max_memory_gb=2, image_backend="pillow", compression="png_0")` |
+| `load_from_disk(cls, directory, host="localhost", http_port=8000, ws_port=8765, config=None)` |
 | `build_pmtiles_file(cls, directory)` |
 | `demo_array(cls, host="localhost", http_port=8000)` |
 | `demo_modules(cls, host="localhost", http_port=8000)` |
+
+**Parameter notes**
+
+- `gap_size` - integer spacing between visualized slices. Default `0`.
+- `ordering` - tuple or list defining the axis permutation, identical to `numpy.transpose`. The visualizer treats the **last two dimensions** as width and height, so arrays in `(H, W, C)` layout appear distorted and must be reordered, e.g. `ordering=(2, 0, 1)`.
+- `image` - accepts a URL string, a local file path, or a Pillow `Image` instance.
 
 ### WebConfig
 
@@ -413,7 +322,7 @@ class WebConfig:
 | `NumpyView` | `__init__(self, id, data, gap_size=1, ordering=None, description=None)` |
 | `TensorView` | `__init__(self, id, data, gap_size=1, ordering=None, description=None)` |
 | `LazyImageView` | `__init__(self, id, image, description=None)` |
-| `DiscImageView` | `__init__(self, id, image, description=None)` |
+| `DiskImageView` | `__init__(self, id, image, description=None)` |
 | `DirectoryGridView` | `__init__(self, id, directory, lazy=False, limit=None)` |
 | `DirectorySpiralView` | `__init__(self, id, directory, lazy=False, limit=None)` |
 | `DatasetView` | `__init__(self, id, dataset, image_columns, info_columns, cell_width, cell_height, image_backend, info_column_mapping_func)` |
@@ -441,8 +350,8 @@ class WebConfig:
 | Call | Effect |
 |---|---|
 | `get_cache_dir()` | Resolve the current cache directory |
-| `save_to_disc(view, directory, ...)` | Write a scene into tiles plus a `tree.db` |
-| `load_from_disc(directory)` | Open a built scene without the original data |
+| `save_to_disk(view, directory, ...)` | Write a scene into tiles plus a `tree.db` |
+| `load_from_disk(directory)` | Open a built scene without the original data |
 | `build_pmtiles_file(directory)` | Turn a built scene into a PMTiles pyramid for remote hosting |
 
 ### Terminal buffer helpers
@@ -471,7 +380,7 @@ Svetoviz provides native support for image data, abstracting away the boilerplat
 The `image` method is polymorphic. It accepts local file paths, remote URLs, or existing Pillow (PIL) image objects. This is the fastest way to verify data integrity or inspect high-bit-depth scientific imagery.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Supports URL, local path, or PIL object
 filepath = "/datasets/nasaimages/heic2409a.tif"
@@ -490,7 +399,7 @@ sv.image(filepath)
 For multiple images, `images` allows you to pass a list of mixed-source images. The engine tiles them in 3D space, enabling you to rotate and zoom through entire batches.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 image1_url = "https://t4.ftcdn.net/jpg/02/70/3..."
 image2_url = "https://www.mamp.one/wp-content/..."
@@ -517,7 +426,7 @@ Images processed via `image` and `images` are loaded eagerly and streamed direct
 import os
 os.environ["SVETO_VIZ_CACHE_DIR"] = "/path/to/your/custom/cache"
 
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Verify cache directory
 current_cache = sv.get_cache_dir()
@@ -536,7 +445,7 @@ The core of Svetoviz is its ability to handle raw NumPy arrays of any dimension 
 Use `array` to project a single NumPy array into the 3D scene. The `gap_size` parameter controls the visual spacing between high-dimensional slices, making it easier to identify patterns across tensors.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 data = np.random.rand(4, 4, 32, 32).astype(np.float32)
 
@@ -558,7 +467,7 @@ Svetoviz handles high-dimensional tensors by "stacking" them along specific axes
 Svetoviz supports the full spectrum of NumPy dtypes - from standard integers and floats to complex numbers and booleans. Using `arrays`, you can pass a list of arrays with varying shapes and types.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 sv.arrays([
     # integers
@@ -594,7 +503,7 @@ sv.arrays([
 By default, Svetoviz expects the last two dimensions of an array to represent the spatial height and width `(H, W)`. When passing standard image data in `(H, W, C)` format, the engine renders the channels as the spatial grid, resulting in a distorted view.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Standard PIL to NumPy conversion results in (H, W, C)
 data = np.array(image)
@@ -608,7 +517,7 @@ sv.array(data, gap_size=0)
 To resolve this, use the `ordering` parameter to transpose the axes for the 3D projection without modifying the original array in memory. For a standard `(H, W, C)` image, use `ordering=(2, 0, 1)` to correctly map the dimensions.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Standard PIL to NumPy conversion results in (H, W, C)
 data = np.array(image)
@@ -624,7 +533,7 @@ sv.array(data, gap_size=0, ordering=(2, 0, 1))
 Svetoviz handles large arrays with ease. You can, for example, see all frames from a videoclip at once, allowing for a comprehensive spatial overview of temporal data.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Load your video as a numpy array
 array = video_to_5d_grid('bunny.mp4')
@@ -642,7 +551,7 @@ Svetoviz provides integrated support for the Hugging Face `datasets` ecosystem. 
 ### Building a dataset scene
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 from datasets import load_dataset
 
 hf_name = "Dewa/Dog_Emotion_Dataset_v2"
@@ -657,7 +566,7 @@ layout = sv.DatasetView(
     cell_height=400
 )
 
-sv.save_to_disc(
+sv.save_to_disk(
     view=layout,
     compression="png_0",
     directory=output_directory
@@ -681,9 +590,9 @@ sv.save_to_disc(
 ### Starting the dataset
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
-sv.load_from_disc(directory=output_directory)
+sv.load_from_disk(directory=output_directory)
 ```
 
 <img src="assets/images/dataset_viewer_ui.png" width="720" alt="Dataset view">
@@ -693,7 +602,7 @@ sv.load_from_disc(directory=output_directory)
 Include `info_columns` to automatically build the search database:
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 from datasets import load_dataset
 
 hf_name = "eltorio/ROCOv2-radiology"
@@ -708,12 +617,12 @@ layout = sv.DatasetView(
     cell_height=400
 )
 
-sv.save_to_disc(
+sv.save_to_disk(
     view=layout,
     compression="png_0",
     directory=output_directory
 )
-sv.load_from_disc(directory=output_directory)
+sv.load_from_disk(directory=output_directory)
 ```
 
 Use the web interface to search over the entire dataset:
@@ -776,7 +685,7 @@ The Views API is built on two primary class types: `View` and `Layout`.
 ### NumpyView
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 view = sv.NumpyView(
         id="numpy_view_example",
@@ -789,7 +698,7 @@ sv.view(view=view)
 <img src="assets/images/views_numpy_view.png" width="720" alt="NumPy view">
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 image = Image.open(BytesIO(requests.get(IMAGE_URL).content))
 data = np.array(image)
@@ -810,12 +719,12 @@ sv.view(view=view)
 
 ### ImageView
 
-For images, use `DiscImageView` to stream assets directly from storage, or `LazyImageView` to lazy-load images into RAM only when required. Both classes accept a URL, a local file path, or a PIL image object as the source.
+For images, use `DiskImageView` to stream assets directly from storage, or `LazyImageView` to lazy-load images into RAM only when required. Both classes accept a URL, a local file path, or a PIL image object as the source.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
-view = sv.DiscImageView(
+view = sv.DiskImageView(
         id="disc_image",
         image=IMAGE_URL)
 
@@ -835,7 +744,7 @@ sv.view(view=view)
 The `DirectoryGridView` is a specialized layout class designed to automatically load and organize an entire directory of images into a structured grid scene.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Optional function to provide searchable description per filepath
 def description_func(filepath):
@@ -861,7 +770,7 @@ sv.view(layout)
 The `DirectorySpiralView` is a specialized layout class designed to automatically load and organize an entire directory of images into a structured spiral scene.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Optional function to provide searchable description per filepath
 def description_func(filepath):
@@ -885,7 +794,7 @@ sv.view(layout)
 **Lazy vs eager loading**
 
 - `lazy=True` is limited by available RAM, and the scene may appear empty at launch until data loads.
-- `lazy=False` is limited by available disc space for the `DiscImageView` memory files and by the maximum number of open file descriptors.
+- `lazy=False` is limited by available disc space for the `DiskImageView` memory files and by the maximum number of open file descriptors.
 - `sv.view()` may start failing around 500 - 1000 data points. For larger collections, build the scene offline (see [Offline scene building](#offline-scene-building)).
 
 ### DatasetView
@@ -893,7 +802,7 @@ sv.view(layout)
 The `DatasetView` enables the integration of Hugging Face datasets directly into your scene. It automatically processes a dataset object and renders its entries into a structured grid of images. You will learn more about `DatasetView` in [Datasets](#6-datasets).
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 hf_name = "Dewa/Dog_Emotion_Dataset_v2"
 dataset = load_dataset(hf_name, split="train")
@@ -918,7 +827,7 @@ sv.view(layout)
 The `VerticalLayout` arranges its child views in a linear vertical stack.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 numpy_array = np.random.rand(4, 4, 32, 32).astype(np.float32)
 image = Image.open(BytesIO(requests.get(IMAGE_URL).content))
 image_array = np.array(image)
@@ -936,7 +845,7 @@ layout = sv.VerticalLayout(
             data=image_array,
             gap_size=10,
             ordering=(2, 0, 1)),
-        sv.DiscImageView(
+        sv.DiskImageView(
             id="disc_image",
             image=image),
         sv.LazyImageView(
@@ -955,7 +864,7 @@ sv.view(layout)
 The `HorizontalLayout` arranges its child views in a linear horizontal stack.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 numpy_array = np.random.rand(4, 4, 32, 32).astype(np.float32)
 image = Image.open(BytesIO(requests.get(IMAGE_URL).content))
@@ -974,7 +883,7 @@ layout = sv.HorizontalLayout(
             data=image_array,
             gap_size=10,
             ordering=(2, 0, 1)),
-        sv.DiscImageView(
+        sv.DiskImageView(
             id="disc_image",
             image=image),
         sv.LazyImageView(
@@ -993,7 +902,7 @@ sv.view(layout)
 The `GridLayout` arranges its child views in a grid.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 directory = "downloaded_images"
 image_sources = []
@@ -1002,7 +911,7 @@ for root, dirs, files in os.walk(directory):
         image_sources.append(os.path.join(root, file))
 
 image_views = [
-    sv.DiscImageView(id=f"img_{i}", image=src)
+    sv.DiskImageView(id=f"img_{i}", image=src)
     # or sv.LazyImageView(id=f"img_{i}", image=src)
     for i, src in enumerate(image_sources)
 ]
@@ -1018,9 +927,9 @@ sv.view(grid)
 Layouts can be nested to create complex, multi-tiered scenes. Each layout object accepts an optional `title` argument; when provided, the title is rendered as an additional child at the beginning of the collection, adhering to the parent's defined spatial positioning.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
-disc_image = sv.DiscImageView(
+disc_image = sv.DiskImageView(
     id="disc_image",
     image="sample_image.jpg")
 
@@ -1126,7 +1035,7 @@ Displaying a scene with `view` is typically sufficient for scenes containing a s
 This example demonstrates building a unified scene from the complete **ESA/Hubble** and **ESA/Webb** image catalogs in maximum quality.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 images_directory = "/Users/piotrgryko/Desktop/nasaimages"
 config_file_path = os.path.join(images_directory, "config.json")
@@ -1152,7 +1061,7 @@ layout = sv.DirectorySpiralView(
 )
 
 # Export to persistent storage
-sv.save_to_disc(
+sv.save_to_disk(
     view=layout,
     threaded=True,
     directory="output/space_scene",
@@ -1163,15 +1072,15 @@ sv.save_to_disc(
 Once the build is complete, launch the interactive 3D environment directly from the directory:
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
-sv.load_from_disc(directory="output/space_scene")
+sv.load_from_disk(directory="output/space_scene")
 ```
 
 Alternatively, you can process the scene further and generate a PMTiles file for remote hosting and streaming:
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Create PMTiles file inside the scene directory
 sv.build_pmtiles_file(
@@ -1182,7 +1091,7 @@ sv.build_pmtiles_file(
 After uploading the generated PMTiles file to a remote server, you can browse the scene from anywhere without distributing the original dataset:
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 db_file = "output/space_scene/tree.db"
 url = "your remote pmtiles file url"
@@ -1199,7 +1108,7 @@ sv.view(layout)
 To re-open a saved scene as a widget instead of launching it, use `DiskSceneView`:
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 # Saved Dog_Emotion_Dataset_v2 dataset
 view = sv.DiskSceneView(
@@ -1228,7 +1137,7 @@ Svetoviz supports `torch.Tensor` visualization exactly like standard NumPy array
 Use `tensor()` to project a single `torch.Tensor` into the 3D scene. The `gap_size` parameter controls the visual spacing between high-dimensional slices.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 data = torch.rand((4, 4, 256, 256), dtype=torch.float32)
 sv.tensor(data, gap_size=10)
@@ -1241,7 +1150,7 @@ sv.tensor(data, gap_size=10)
 Svetoviz supports the full spectrum of torch dtypes - from standard integers and floats to complex numbers and booleans. Using `tensors()`, you can pass a list of `torch.Tensor` with varying shapes and types.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 sv.tensors([
     # integers
@@ -1281,7 +1190,7 @@ sv.tensors([
 `torch.Tensor` visualization inherits all features from standard NumPy views, including stacking, ordering, colormaps, and large tensor support. `TensorView` is also the primary view used for rendering PyTorch models.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 view = sv.TensorView(
         id="tensor_view_example",
@@ -1332,7 +1241,7 @@ Selected breakpoints flash during interaction, and their activations are automat
 ### GPT-2 terminal callback
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2', device_map="cpu")
 model = GPT2LMHeadModel.from_pretrained('gpt2', device_map="cpu")
@@ -1366,7 +1275,7 @@ sv.model(
 ### DETR terminal callback
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 image_processor = DetrImageProcessor.from_pretrained(
     "facebook/detr-resnet-50",
@@ -1405,7 +1314,7 @@ sv.model(
 The `blocking=False` argument starts the debugger in non-blocking mode, allowing you to continue with your model interaction as usual.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 tokenizer = AutoTokenizer.from_pretrained(
     "speakleash/Bielik-Minitron-7B-v3.0-Instruct")
@@ -1433,7 +1342,7 @@ while True:
 Collected activations are stored in RAM. For small models, you can inspect an entire pass. For larger models like diffusion models, select specific breakpoints. For example, you can select the Scheduler module to see each step of the denoising process.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 pipe = DiffusionPipeline.from_pretrained(
     "stable-diffusion-v1-5/stable-diffusion-v1-5",
@@ -1464,7 +1373,7 @@ sv.pipeline(
 Use the Views API with `ModelView` or `PipelineView` to build a compressed, static representation of the model:
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 view = sv.ModelView(
     id="detr-resnet-50",
@@ -1472,7 +1381,7 @@ view = sv.ModelView(
     image_processor=image_processor
 )
 
-sv.save_to_disc(view=view, directory="output/detr_scene")
+sv.save_to_disk(view=view, directory="output/detr_scene")
 ```
 
 ### Renderer settings
@@ -1485,56 +1394,38 @@ Online models are browsable at https://www.svetoviz.com.
 
 ---
 
-## 10. Python App and Desktop App (OpenGL)
+## 10. Python App
 
-The Python OpenGL app provides a lightweight, local alternative for rapid inspection of tensors and modules without launching a web server.
+The `svetoviz` Python package is the entry point for the whole application. Every helper builds a scene in your Python process and streams it to the WebGPU renderer, which opens automatically in your browser at `http://localhost:8000`. There is no separate native binary to install - the renderer ships with the package and runs locally.
 
-### Local 2D rendering
+Download [`examples/quickstart_webgpu.py`](examples/quickstart_webgpu.py) for a complete, runnable script.
 
-The OpenGL application is written in pure **OpenGL**. While it focuses on clear perspective rather than the immersive 3D quality of the web interface, it is a great way to check your modules and weights directly on your desktop.
+### One API surface
 
-Download [`examples/quickstart_opengl.py`](examples/quickstart_opengl.py) for practical examples.
+Every data type is reached through the same set of class methods, so moving between arrays, images, tensors and models only changes the function you call:
 
-```bash
-pip install svetoviz_opengl --extra-index-url https://svetoviz.com/opengl/simple/
-```
-
-**Compatibility:** macOS (Apple Silicon) and Python 3.9 through 3.12.
-
-All WebGPU equivalents are also available in the Python OpenGL interface. Simply replace the import:
-
-```python
-import svetoviz_opengl as sv
-
-# Load and View Scenes
-sv.load_from_disc(directory="output/space_scene")
-sv.view(layout)
-
-# Basic Tensors
-sv.array(tensor)
-sv.arrays([t1, t2, t3])
-
-# Neural Networks
-sv.pytorch(module)
-sv.model(hf_model)
-
-# Computer Vision
-sv.image(img)
-sv.images(image_list)
-```
-
-| `sv.array()` | `sv.arrays()` |
+| Call | Purpose |
 |---|---|
-| <img src="assets/images/desktop_array_single.png" width="420" alt="Single array visualization"> | <img src="assets/images/desktop_arrays_multi.png" width="420" alt="Multiple arrays visualization"> |
-| `sv.image()` | `sv.images()` |
-| <img src="assets/images/desktop_image_single.png" width="420" alt="Single image view"> | <img src="assets/images/desktop_images_multi.png" width="420" alt="Batch image view"> |
+| `sv.array(np_array, gap_size=0, ordering=None)` | Visualize a single NumPy array |
+| `sv.arrays(arrays, gap_size=0)` | Visualize a list of NumPy arrays |
+| `sv.tensor(tensor, gap_size=0, ordering=None)` | Visualize a single `torch.Tensor` |
+| `sv.tensors(tensors, gap_size=0)` | Visualize a list of tensors |
+| `sv.image(image)` | Visualize one image (URL / path / PIL) |
+| `sv.images(images)` | Visualize a list of images |
+| `sv.pytorch(module, terminal_callback=None)` | Attach the debugger to a `nn.Module` |
+| `sv.model(id, model, ...)` | Attach the debugger to a Hugging Face model |
+| `sv.pipeline(id, pipe, ...)` | Attach the debugger to a pipeline |
+| `sv.view(view)` | Open a View or Layout instance |
+| `sv.save_to_disk(view, directory, ...)` | Build a scene offline |
+| `sv.load_from_disk(directory)` | Open a previously built scene |
 
 ### Explicit layout control
 
-For WebGPU you can control layout directly in the renderer. For the OpenGL app you control layout with additional arguments: `padding`, `spacing` and `gravity`.
+Assemble a scene from Views and Layouts and control the spatial organization with `padding`, `spacing` and `gravity`. These arguments are available on every layout container, so the same code produces a consistent scene whether it is opened live or built offline.
 
 ```python
-import svetoviz_opengl as sv
+import svetoviz as sv
+import numpy as np
 
 view = sv.GridLayout(
     id="layout",
@@ -1553,9 +1444,7 @@ view = sv.GridLayout(
             views=[
                 sv.NumpyView(
                     id="float32",
-                    data=np.random.rand(
-                        6, 24,
-                        128, 32).astype(np.float32),
+                    data=np.random.rand(6, 24, 128, 32).astype(np.float32),
                     gap_size=10,
                     ordering=None)
             ]
@@ -1567,68 +1456,12 @@ view = sv.GridLayout(
             spacing="5%",
             background_color=(50, 50, 50, 255),
             views=[
-                sv.DiscImageView(
-                    id="disc_image",
+                sv.DiskImageView(
+                    id="disk_image",
                     image=IMAGE_URL),
                 sv.LazyImageView(
                     id="lazy_image",
                     image=IMAGE_URL)
-            ]
-        ),
-        sv.VerticalLayout(
-            id="float64_container",
-            title="np.float64",
-            padding="5%",
-            background_color=(50, 50, 50, 255),
-            views=[
-                sv.NumpyView(
-                    id="float64",
-                    data=(np.random.uniform(
-                        -1, 1,
-                        (2, 32, 72, 24))
-                          * 1.7976931348623157e+308).astype(np.float64),
-                    gap_size=10,
-                    ordering=None)
-            ]
-        ),
-        sv.HorizontalLayout(
-            id="vertical3",
-            title="Integer",
-            padding="5%",
-            spacing="5%",
-            gravity="center",
-            background_color=(50, 50, 50, 255),
-            views=[
-                sv.VerticalLayout(
-                    id="int8_container",
-                    title="np.int8",
-                    padding="5%",
-                    background_color=(50, 50, 50, 255),
-                    views=[
-                        sv.NumpyView(
-                            id="int8",
-                            data=np.random.randint(
-                                -128, 128,
-                                (2, 2, 128, 128), dtype=np.int8),
-                            gap_size=10,
-                            ordering=None)
-                    ]
-                ),
-                sv.VerticalLayout(
-                    id="int32_container",
-                    title="np.int32",
-                    padding="5%",
-                    background_color=(50, 50, 50, 255),
-                    views=[
-                        sv.NumpyView(
-                            id="int32",
-                            data=np.random.randint(
-                                -2147483648, 2147483648,
-                                (4, 4, 64, 64), dtype=np.int32),
-                            gap_size=10,
-                            ordering=None)
-                    ]
-                ),
             ]
         ),
     ],
@@ -1637,102 +1470,32 @@ view = sv.GridLayout(
 sv.view(view=view)
 ```
 
-<img src="assets/images/desktop_grid_layout.png" width="620" alt="Grid layout with styles">
-
 ### Image layouts
 
+Directory views load and organize an entire folder of images into a structured scene:
+
 ```python
-import svetoviz_opengl as sv
+import svetoviz as sv
 
 view = sv.DirectorySpiralView(
-    directory="/Users/piotrgryko/Desktop/nasaimages",
+    directory="downloaded_images",
     limit=200,
     lazy=False
 )
 sv.view(view)
 ```
 
-<img src="assets/images/desktop_spiral_layout.png" width="460" alt="Spiral image layout">
-
 ### Saving and loading
 
-The OpenGL app allows for saving and opening directly from disc using `load_from_disc()` and `save_to_disc()`.
-
-| Full collection saved to disc | Zoom down to pixel |
-|---|---|
-| <img src="assets/images/desktop_view_layout.png" width="420" alt="Desktop layout viewer"> | <img src="assets/images/desktop_load_disc.png" width="420" alt="Desktop scene loader"> |
-
-### Datasets
-
-You can build and open your datasets the same as in the WebGPU app:
+Build a scene once and reopen it later without the original data. `save_to_disk()` writes tiles plus a `tree.db`, and `load_from_disk()` opens it again:
 
 ```python
-import svetoviz_opengl as sv
+import svetoviz as sv
 
-hf_name = "Dewa/Dog_Emotion_Dataset_v2"
-dataset = load_dataset(hf_name, split="train")
+sv.save_to_disk(view=view, directory="output/scene")
 
-view = sv.DatasetView(
-    name=hf_name,
-    dataset=dataset,
-    image_columns=["image"],
-    cell_width=400,
-    cell_height=400,
-)
-
-sv.save_to_disc(view=view,
-                threaded=True,
-                directory=output_directory,
-                compression=CompressionMode.PNG_0,
-                tree_db_only=False)
-sv.load_from_disc(directory=output_directory)
+sv.load_from_disk(directory="output/scene")
 ```
-
-| Dataset grid view | Dataset inspection |
-|---|---|
-| <img src="assets/images/desktop_dataset_1.png" width="420" alt="Dataset grid"> | <img src="assets/images/desktop_dataset_2.png" width="420" alt="Dataset detail"> |
-
-### PyTorch module inspection
-
-The OpenGL app is a great way to have a clear view over your PyTorch modules. To dive into the data, open the **Terminal View** to interact via callbacks, then use the **Timeline View** to inspect the resulting weights and states. OpenGL and WebGPU share a single mapping logic, so results are consistent across the two renderers.
-
-```python
-import svetoviz_opengl as sv
-
-img = Image.open("sample_image.jpg").convert("RGB")
-img_np = np.array(img).astype(np.float32) / 255.0
-# Rearrange from (H, W, C) to (C, H, W) and add batch dim
-input_tensor = torch.from_numpy(img_np).permute(2, 0, 1).unsqueeze(0)
-
-# 2. Define the 2D Convolutional module
-conv2d = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1)
-
-def terminal_callback(buffer, message, images, files):
-    # 3. Process the image through the module
-    output = conv2d(input_tensor)
-
-    # Log the feature map shape to the Svetoviz terminal
-    buffer.send_system_message(f"Processed image. Shape: {list(output.shape)}")
-
-# 4. Start the interactive session
-sv.pytorch(module=conv2d, terminal_callback=terminal_callback)
-```
-
-| Interactive callback | Timeline view |
-|---|---|
-| <img src="assets/images/pytorch_inspect_5.png" width="420" alt="Interactive callback"> | <img src="assets/images/pt_module_1.png" width="420" alt="Timeline view"> |
-| <img src="assets/images/pytorch_inspect_6.png" width="420" alt="Interactive callback"> | <img src="assets/images/pt_module_2.png" width="420" alt="Timeline view"> |
-| <img src="assets/images/pytorch_inspect_7.png" width="420" alt="Interactive callback"> | <img src="assets/images/pt_module_3.png" width="420" alt="Timeline view"> |
-| <img src="assets/images/pytorch_inspect_8.png" width="420" alt="Interactive callback"> | <img src="assets/images/pt_module_4.png" width="420" alt="Timeline view"> |
-
-### Interactive models
-
-The OpenGL app also lets you interact with a model similar to the web app. Load the model and use the **Terminal View** to run real-time queries.
-
-| Model terminal | Model terminal |
-|---|---|
-| <img src="assets/images/model_terminal_1.png" width="420" alt="Model terminal"> | <img src="assets/images/model_terminal_2.png" width="420" alt="Model terminal"> |
-| <img src="assets/images/model_terminal_3.png" width="420" alt="Model terminal"> | <img src="assets/images/model_terminal_4.png" width="420" alt="Model terminal"> |
 
 ---
 
@@ -1763,7 +1526,7 @@ The three views below show that pipeline on `nn.Conv3d`. First the input volume 
 The `pytorch` interface wraps your `nn.Module` and provides a terminal for live interaction. This allows you to process data and inspect the resulting tensors without leaving the visualization environment.
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 import torch
 import torch.nn as nn
 from PIL import Image
@@ -1907,7 +1670,7 @@ Each table lists the module, a one-line purpose and the parameters that matter m
 #### Activation functions (28)
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 def demo_activation():
     input_tensor = torch.from_numpy(img_np)\
@@ -1987,7 +1750,7 @@ def demo_activation():
 #### Loss functions (13)
 
 ```python
-import svetoviz_webgpu as sv
+import svetoviz as sv
 
 def demo_loss():
     losses = nn.ModuleDict({
@@ -2040,7 +1803,7 @@ public scenes, module walkthroughs and published datasets.
 
 | Destination | What is there |
 |---|---|
-| **https://www.svetoviz.com** | Product overview, the public 3D scene directory |
+| **https://www.svetoviz.com** | Product overview, the public 3D scene directory and pricing |
 | **https://www.svetoviz.com/docs** | The full manuals and guides mirrored by this README |
 | **https://pytorch.svetoviz.com** | Illustrated per-module guides for all 114 PyTorch modules |
 | **https://app.svetoviz.com** | Dataset scenes published online, browsable in the browser |
@@ -2062,7 +1825,7 @@ The written guides published on the website, in the same order as this README:
 | Guide | Covers | Link |
 |---|---|---|
 | Overview | What Svetoviz is, the visual-debugger concept, supported data types | https://www.svetoviz.com/docs |
-| Installation | Both packages, dependency lists, single-environment setup, demos | https://www.svetoviz.com/docs/install |
+| Installation | Package, dependency list, cache setup, demos | https://www.svetoviz.com/docs/install |
 | API Reference | Full signatures and parameters for every method, view, layout, remote view and utility | https://www.svetoviz.com/docs/docs |
 | Images | `image` / `images` polymorphism, batch inspection, cache configuration | https://www.svetoviz.com/docs/images |
 | NumPy | Single array inspection, stacking, colormaps, mixed dtypes, axis ordering, large high-dimensional arrays | https://www.svetoviz.com/docs/numpy |
@@ -2070,7 +1833,6 @@ The written guides published on the website, in the same order as this README:
 | Views | `View` vs `Layout`, directory views, layout nesting, offline scene building | https://www.svetoviz.com/docs/views |
 | torch.Tensor | Single tensor inspection, mixed dtypes, stacking, ordering, large tensors | https://www.svetoviz.com/docs/tensor |
 | Models | `model()` vs `pipeline()`, terminal callbacks, non-blocking mode, diffusion pipelines | https://www.svetoviz.com/docs/models |
-| Desktop App | OpenGL specifics: local rendering, explicit layout control, image layouts, saving / loading, datasets, module and model inspection | https://www.svetoviz.com/docs/pythonapp |
 | PyTorch | Wrapping `nn.Module`, the interaction terminal, layer relations and provenance mapping | https://www.svetoviz.com/docs/pytorch |
 | PyTorch Modules | The illustrated module catalog (114 modules) | https://pytorch.svetoviz.com |
 | Activation functions | All 28 supported activation modules | https://www.svetoviz.com/docs/activations |
@@ -2096,8 +1858,7 @@ The written guides published on the website, in the same order as this README:
 - **Documentation:** https://www.svetoviz.com/docs
 - **PyTorch module guides:** https://pytorch.svetoviz.com
 - **Online datasets:** https://app.svetoviz.com
-- **OpenGL wheel index:** https://svetoviz.com/opengl/simple/
-- **WebGPU wheel index:** https://svetoviz.com/webgpu/simple/
+- **Python package wheel index:** https://svetoviz.com/webgpu/simple/
 - **Author - LinkedIn:** https://www.linkedin.com/in/piotr-gryko-946756101/
 - **Author - GitHub:** https://github.com/PiotrGryko
 
@@ -2134,6 +1895,6 @@ Registered in Bialystok, Poland.
 
 [![Open Svetoviz](https://img.shields.io/badge/Open%20Svetoviz-www.svetoviz.com-CC7832?style=for-the-badge)](https://www.svetoviz.com)
 
-**https://www.svetoviz.com** - documentation, install commands and the public model / dataset browser.
+**https://www.svetoviz.com** - documentation, install commands, pricing and the public model / dataset browser.
 
 </div>
