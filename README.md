@@ -174,32 +174,18 @@ Dependencies installed with the Svetoviz package:
 
 ```python
 dependencies = [
-    "Flask==3.1.3",
-    "flask-cors==6.0.5",
-    "waitress==3.0.2",
-    "opencv-python==4.13.0.92",
+    "Flask>=3.1,<4",
+    "flask-cors>=6.0,<7",
+    "waitress>=3.0,<4",
+    "websockets>=15,<16",
+    "opencv-python>=4.10",
     "psd-tools==1.11.0",
     "pmtiles==3.7.0",
-    "websockets==15.0.1",
     "petname==2.9",
-
-    # requests
-    "requests==2.32.5; python_version == '3.9'",
-    "requests==2.34.2; python_version >= '3.10'",
-
-    # transformers
-    "transformers==4.57.3; python_version == '3.9'",
-    "transformers==5.20.2; python_version == '3.10'",
-    "transformers==5.23.0; python_version >= '3.11'",
-
-    # torch
-    "torch==2.8.0; python_version == '3.9'",
-    "torch==2.14.1; python_version == '3.10'",
-    "torch==2.15.0; python_version >= '3.11'",
-
-    # datasets
-    "datasets==4.5.0; python_version == '3.9'",
-    "datasets==5.2.0; python_version >= '3.10'",
+    "requests>=2.32,<3",
+    "transformers>=4.57,<6",
+    "torch>=2.8",
+    "datasets>=4.5,<6",
 ]
 ```
 
