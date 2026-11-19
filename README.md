@@ -158,11 +158,17 @@ This README mirrors the documentation site section by section. Every code block 
 
 ## 2. Installation and Quick Start
 
-Svetoviz is currently distributed via a private repository.
+Svetoviz is currently distributed via pip.
 
 ### Installation
 
 Install the Svetoviz package (WebGPU renderer) with the following command:
+
+```bash
+pip install svetoviz
+```
+
+Or using a private repository:
 
 ```bash
 pip install svetoviz --extra-index-url https://svetoviz.com/webgpu/simple/
