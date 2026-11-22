@@ -16,7 +16,7 @@ module.
 [![Python](https://img.shields.io/badge/Python-3.9%20to%203.14-9876AA?style=flat-square)](#2-installation-and-quick-start)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20Apple%20Silicon%20%7C%20Linux-FFC66D?style=flat-square)](#2-installation-and-quick-start)
 [![Renderer](https://img.shields.io/badge/Renderer-WebGPU-BBB529?style=flat-square)](#1-overview)
-[![Modules](https://img.shields.io/badge/PyTorch%20modules-114%20documented-A9B7C6?style=flat-square)](#11-pytorch-modules-and-debugger)
+[![Modules](https://img.shields.io/badge/PyTorch%20modules-114%20documented-A9B7C6?style=flat-square)](#10-pytorch-modules-and-debugger)
 
 **[Website](https://www.svetoviz.com)** &nbsp;|&nbsp; **[Documentation](https://www.svetoviz.com/docs)** &nbsp;|&nbsp; **[Install](#2-installation-and-quick-start)**
 
@@ -82,22 +82,17 @@ module.
     - [Diffusion pipeline](#diffusion-pipeline)
     - [Static model views](#static-model-views)
     - [Renderer settings](#renderer-settings)
-- [10. Python App](#10-python-app)
-    - [One API surface](#one-api-surface)
-    - [Explicit layout control](#explicit-layout-control)
-    - [Image layouts](#image-layouts)
-    - [Saving and loading](#saving-and-loading)
-- [11. PyTorch Modules and Debugger](#11-pytorch-modules-and-debugger)
+- [10. PyTorch Modules and Debugger](#10-pytorch-modules-and-debugger)
     - [Interactive modules](#interactive-modules)
     - [Layer relations](#layer-relations)
     - [Module catalog](#module-catalog)
-- [12. Try Svetoviz Now](#12-try-svetoviz-now)
-- [13. Documentation Index](#13-documentation-index)
+- [11. Try Svetoviz Now](#11-try-svetoviz-now)
+- [12. Documentation Index](#12-documentation-index)
     - [Video demos](#video-demos)
-- [14. Links](#14-links)
-- [15. About](#15-about)
+- [13. Links](#13-links)
+- [14. About](#14-about)
 
-> Every section below mirrors the matching page of the documentation site (https://www.svetoviz.com/docs) one to one, in the same order. The section-to-page mapping, including the reference script, is listed in [Documentation Index](#13-documentation-index).
+> Every section below mirrors the matching page of the documentation site (https://www.svetoviz.com/docs) one to one, in the same order. The section-to-page mapping, including the reference script, is listed in [Documentation Index](#12-documentation-index).
 
 ---
 
@@ -1386,112 +1381,7 @@ Online models are browsable at https://www.svetoviz.com.
 
 ---
 
-## 10. Python App
-
-The `svetoviz` Python package is the entry point for the whole application. Every helper builds a scene in your Python process and streams it to the WebGPU renderer, which opens automatically in your browser at `http://localhost:8000`. There is no separate native binary to install - the renderer ships with the package and runs locally.
-
-Download [`examples/quickstart_webgpu.py`](examples/quickstart_webgpu.py) for a complete, runnable script.
-
-### One API surface
-
-Every data type is reached through the same set of class methods, so moving between arrays, images, tensors and models only changes the function you call:
-
-| Call | Purpose |
-|---|---|
-| `sv.array(np_array, gap_size=0, ordering=None)` | Visualize a single NumPy array |
-| `sv.arrays(arrays, gap_size=0)` | Visualize a list of NumPy arrays |
-| `sv.tensor(tensor, gap_size=0, ordering=None)` | Visualize a single `torch.Tensor` |
-| `sv.tensors(tensors, gap_size=0)` | Visualize a list of tensors |
-| `sv.image(image)` | Visualize one image (URL / path / PIL) |
-| `sv.images(images)` | Visualize a list of images |
-| `sv.pytorch(module, terminal_callback=None)` | Attach the debugger to a `nn.Module` |
-| `sv.model(id, model, ...)` | Attach the debugger to a Hugging Face model |
-| `sv.pipeline(id, pipe, ...)` | Attach the debugger to a pipeline |
-| `sv.view(view)` | Open a View or Layout instance |
-| `sv.save_to_disk(view, directory, ...)` | Build a scene offline |
-| `sv.load_from_disk(directory)` | Open a previously built scene |
-
-### Explicit layout control
-
-Assemble a scene from Views and Layouts and control the spatial organization with `padding`, `spacing` and `gravity`. These arguments are available on every layout container, so the same code produces a consistent scene whether it is opened live or built offline.
-
-```python
-import svetoviz as sv
-import numpy as np
-
-view = sv.GridLayout(
-    id="layout",
-    title="Grid Layout",
-    padding="2%",
-    title_color=(155, 155, 155),
-    background_color=(0, 0, 0, 255),
-    spacing=40,
-    views=[
-        sv.VerticalLayout(
-            id="vertical1",
-            title="np.float32",
-            padding="5%",
-            spacing="5%",
-            background_color=(50, 50, 50, 255),
-            views=[
-                sv.NumpyView(
-                    id="float32",
-                    data=np.random.rand(6, 24, 128, 32).astype(np.float32),
-                    gap_size=10,
-                    ordering=None)
-            ]
-        ),
-        sv.VerticalLayout(
-            id="vertical2",
-            title="Images",
-            padding="5%",
-            spacing="5%",
-            background_color=(50, 50, 50, 255),
-            views=[
-                sv.DiskImageView(
-                    id="disk_image",
-                    image=IMAGE_URL),
-                sv.LazyImageView(
-                    id="lazy_image",
-                    image=IMAGE_URL)
-            ]
-        ),
-    ],
-)
-
-sv.view(view=view)
-```
-
-### Image layouts
-
-Directory views load and organize an entire folder of images into a structured scene:
-
-```python
-import svetoviz as sv
-
-view = sv.DirectorySpiralView(
-    directory="downloaded_images",
-    limit=200,
-    lazy=False
-)
-sv.view(view)
-```
-
-### Saving and loading
-
-Build a scene once and reopen it later without the original data. `save_to_disk()` writes tiles plus a `tree.db`, and `load_from_disk()` opens it again:
-
-```python
-import svetoviz as sv
-
-sv.save_to_disk(view=view, directory="output/scene")
-
-sv.load_from_disk(directory="output/scene")
-```
-
----
-
-## 11. PyTorch Modules and Debugger
+## 10. PyTorch Modules and Debugger
 
 Svetoviz provides native support for PyTorch modules. Your interaction activations are collected and presented on the screen, allowing for real-time inspection of data transformations.
 
@@ -1788,7 +1678,7 @@ Browse every module screenshot and per-module walkthrough at **https://pytorch.s
 
 ---
 
-## 12. Try Svetoviz Now
+## 11. Try Svetoviz Now
 
 Everything in this README runs in the live viewer. You do not need to install anything to look at the
 public scenes, module walkthroughs and published datasets.
@@ -1810,7 +1700,7 @@ public scenes, module walkthroughs and published datasets.
 
 ---
 
-## 13. Documentation Index
+## 12. Documentation Index
 
 The written guides published on the website, in the same order as this README:
 
@@ -1844,7 +1734,7 @@ The written guides published on the website, in the same order as this README:
 
 ---
 
-## 14. Links
+## 13. Links
 
 - **Website / public directory:** https://www.svetoviz.com
 - **Documentation:** https://www.svetoviz.com/docs
@@ -1856,7 +1746,7 @@ The written guides published on the website, in the same order as this README:
 
 ---
 
-## 15. About
+## 14. About
 
 **Svetoviz Research** - advancing high-dimensional data visualization and machine learning interpretability.
 
