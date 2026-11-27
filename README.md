@@ -1748,7 +1748,7 @@ The written guides published on the website, in the same order as this README:
 
 ## 14. About
 
-**Svetoviz Research** - advancing high-dimensional data visualization and machine learning interpretability.
+**Svetoviz** - advancing high-dimensional data visualization and machine learning interpretability.
 
 ```
 Piotr Gryko
@@ -1764,8 +1764,6 @@ Registered in Bialystok, Poland.
 <div align="center">
 
 **[www.svetoviz.com](https://www.svetoviz.com)** | **[Documentation](https://www.svetoviz.com/docs)** | **[PyTorch Debugger](https://pytorch.svetoviz.com)**
-
-<p>Built for the Global AI Research Community.</p>
 
 </div>
 
