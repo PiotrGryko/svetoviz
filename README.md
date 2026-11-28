@@ -1750,16 +1750,6 @@ The written guides published on the website, in the same order as this README:
 
 **Svetoviz** - advancing high-dimensional data visualization and machine learning interpretability.
 
-```
-Piotr Gryko
-ul. Prezydenta Ryszarda Kaczorowskiego 14 / 271
-15-375 Bialystok, Poland
-
-NIP:   9662022689
-REGON: 368029613
-```
-
-Registered in Bialystok, Poland.
 
 <div align="center">
 
